@@ -81,8 +81,8 @@ import com.duckduckgo.common.ui.compose.listitem.DaxListItemTrailingIconSize
 import com.duckduckgo.common.ui.compose.listitem.DaxOneLineListItem
 import com.duckduckgo.common.ui.compose.listitem.DaxSettingsListItem
 import com.duckduckgo.common.ui.compose.listitem.DaxTwoLineListItem
-import com.duckduckgo.common.ui.compose.message.DaxAppTPBanner
-import com.duckduckgo.common.ui.compose.message.DaxAppTPBannerState
+import com.duckduckgo.common.ui.compose.message.DaxAppTPBannerDisabled
+import com.duckduckgo.common.ui.compose.message.DaxAppTPBannerEnabled
 import com.duckduckgo.common.ui.compose.message.remote.DaxBigSingleActionMessage
 import com.duckduckgo.common.ui.compose.message.remote.DaxBigTwoActionsMessage
 import com.duckduckgo.common.ui.compose.message.remote.DaxMediumMessage
@@ -587,46 +587,42 @@ sealed class ComponentViewHolder(val view: View) : RecyclerView.ViewHolder(view)
             val onClick = { Snackbar.make(view, component.name, Snackbar.LENGTH_SHORT).show() }
 
             view.setupThemedComposeView(R.id.apptp_banner_enabled_compose, isDarkTheme = isDarkTheme) {
-                DaxAppTPBanner(
+                DaxAppTPBannerEnabled(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("App Tracking Protection is enabled") }
                         append(" and blocking tracking attempts across your apps.")
                     },
-                    state = DaxAppTPBannerState.Protected,
                     onClick = onClick,
                 )
             }
 
             view.setupThemedComposeView(R.id.apptp_banner_trackers_blocked_compose, isDarkTheme = isDarkTheme) {
-                DaxAppTPBanner(
+                DaxAppTPBannerEnabled(
                     text = buildAnnotatedString {
                         append("App Tracking Protection blocked 1,235 tracking attempts in ")
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Yelp and 14 other apps") }
                         append(" (past hour).")
                     },
-                    state = DaxAppTPBannerState.Protected,
                     onClick = onClick,
                 )
             }
 
             view.setupThemedComposeView(R.id.apptp_banner_disabled_compose, isDarkTheme = isDarkTheme) {
-                DaxAppTPBanner(
+                DaxAppTPBannerDisabled(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("App Tracking Protection disabled.") }
                         append("\nTap to continue blocking tracking attempts across your apps.")
                     },
-                    state = DaxAppTPBannerState.Warning,
                     onClick = onClick,
                 )
             }
 
             view.setupThemedComposeView(R.id.apptp_banner_revoked_compose, isDarkTheme = isDarkTheme) {
-                DaxAppTPBanner(
+                DaxAppTPBannerDisabled(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("A VPN app on your device disabled App Tracking Protection.") }
                         append("\nTap to re-enable.")
                     },
-                    state = DaxAppTPBannerState.Warning,
                     onClick = onClick,
                 )
             }

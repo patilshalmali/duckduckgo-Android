@@ -18,12 +18,12 @@ package com.duckduckgo.common.ui.compose.message
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -47,49 +47,103 @@ import com.duckduckgo.common.ui.compose.tools.PreviewBox
 import com.duckduckgo.mobile.android.R
 
 /**
- * Banner summarising the current state of App Tracking Protection, with a trailing pictogram and
- * the whole surface acting as a single tap target.
+ * Banner reporting that App Tracking Protection is on, with a leading checkmark pictogram and the
+ * whole surface acting as a single tap target.
  *
  * The banner owns its surface, shape, shadow and pictogram; the caller owns the copy and the outer
  * spacing, so place it inside whatever margin the host screen uses.
  *
  * @param text The message to display.
- * @param state Which pictogram to show alongside the text.
  * @param onClick Invoked when the banner is tapped.
  * @param modifier The [Modifier] to be applied to this banner.
  *
  * Asana Task: https://app.asana.com/1/137249556945/project/1215496415658080/task/1211670072973969
- * Figma reference: https://www.figma.com/design/BOHDESHODUXK7wSRNBOHdu/%F0%9F%A4%96-Android-Components?node-id=17712-63319
  */
 @Composable
-fun DaxAppTPBanner(
+fun DaxAppTPBannerEnabled(
     text: String,
-    state: DaxAppTPBannerState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DaxAppTPBanner(
+    DaxAppTPBannerEnabled(
         text = AnnotatedString(text),
-        state = state,
         onClick = onClick,
         modifier = modifier,
     )
 }
 
 /**
- * [AnnotatedString] variant of [DaxAppTPBanner]. Use this when the message needs inline styling,
- * such as the bolded lead-in the App Tracking Protection states use.
+ * [AnnotatedString] variant of [DaxAppTPBannerEnabled]. Use this when the message needs inline
+ * styling, such as the bolded lead-in the App Tracking Protection states use.
  *
  * @param text The message to display, as an [AnnotatedString].
- * @see DaxAppTPBanner for the remaining parameters.
- *
- * Asana Task: https://app.asana.com/1/137249556945/project/1215496415658080/task/1211670072973969
- * Figma reference: https://www.figma.com/design/BOHDESHODUXK7wSRNBOHdu/%F0%9F%A4%96-Android-Components?node-id=17712-63319
+ * @see DaxAppTPBannerEnabled for the remaining parameters.
  */
 @Composable
-fun DaxAppTPBanner(
+fun DaxAppTPBannerEnabled(
     text: AnnotatedString,
-    state: DaxAppTPBannerState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DaxAppTPBanner(
+        text = text,
+        pictogram = painterResource(id = R.drawable.shield_check_recolorable_24),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+/**
+ * Banner reporting that App Tracking Protection needs attention, with a leading warning pictogram
+ * and the whole surface acting as a single tap target.
+ *
+ * The banner owns its surface, shape, shadow and pictogram; the caller owns the copy and the outer
+ * spacing, so place it inside whatever margin the host screen uses.
+ *
+ * @param text The message to display.
+ * @param onClick Invoked when the banner is tapped.
+ * @param modifier The [Modifier] to be applied to this banner.
+ *
+ * Asana Task: https://app.asana.com/1/137249556945/project/1215496415658080/task/1211670072973969
+ */
+@Composable
+fun DaxAppTPBannerDisabled(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DaxAppTPBannerDisabled(
+        text = AnnotatedString(text),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+/**
+ * [AnnotatedString] variant of [DaxAppTPBannerDisabled]. Use this when the message needs inline
+ * styling, such as the bolded lead-in the App Tracking Protection states use.
+ *
+ * @param text The message to display, as an [AnnotatedString].
+ * @see DaxAppTPBannerDisabled for the remaining parameters.
+ */
+@Composable
+fun DaxAppTPBannerDisabled(
+    text: AnnotatedString,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DaxAppTPBanner(
+        text = text,
+        pictogram = painterResource(id = R.drawable.exclamation_recolorable_24),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun DaxAppTPBanner(
+    text: AnnotatedString,
+    pictogram: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,65 +151,58 @@ fun DaxAppTPBanner(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = DaxAppTPBannerDefaults.shape,
-        elevation = DaxCardElevation(dimensionResource(R.dimen.keyline_1)),
+        elevation = DaxCardElevation(DaxAppTPBannerDefaults.elevation),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.keyline_4)),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.keyline_2)),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(paddingValues = DaxAppTPBannerDefaults.contentPadding),
+            horizontalArrangement = Arrangement.spacedBy(DaxAppTPBannerDefaults.horizontalSpacing),
+            verticalAlignment = Alignment.Top,
         ) {
+            Image(
+                painter = pictogram,
+                contentDescription = null,
+                modifier = Modifier.size(DaxAppTPBannerDefaults.PictogramSize),
+            )
             DaxText(
                 text = text,
                 style = DuckDuckGoTheme.typography.body2,
                 modifier = Modifier.weight(1f),
             )
-            Image(
-                painter = DaxAppTPBannerDefaults.pictogram(state),
-                contentDescription = null,
-                modifier = Modifier.size(DaxAppTPBannerDefaults.PictogramSize),
-            )
         }
     }
 }
 
-/**
- * The pictogram shown by [DaxAppTPBanner]. Callers map their own product states onto these two:
- * protection is working, or it needs attention.
- */
-@Stable
-enum class DaxAppTPBannerState {
-    Protected,
-    Warning,
-}
-
 private object DaxAppTPBannerDefaults {
-    val PictogramSize: Dp = 48.dp
+    val PictogramSize: Dp = 24.dp
 
     val shape: Shape
         @Composable
         get() = DuckDuckGoTheme.shapes.large
 
-    @Composable
-    fun pictogram(state: DaxAppTPBannerState): Painter = painterResource(
-        when (state) {
-            DaxAppTPBannerState.Protected -> R.drawable.ic_apptp_banner_default
-            DaxAppTPBannerState.Warning -> R.drawable.ic_apptp_banner_warning
-        },
-    )
+    val elevation: Dp
+        @Composable
+        get() = dimensionResource(R.dimen.keyline_1)
+
+    val contentPadding: PaddingValues
+        @Composable
+        get() = PaddingValues(dimensionResource(R.dimen.keyline_4))
+
+    val horizontalSpacing: Dp
+        @Composable
+        get() = dimensionResource(R.dimen.keyline_2)
 }
 
 @PreviewLightDark
 @Composable
 private fun DaxAppTPBannerEnabledPreview() {
     PreviewBox {
-        DaxAppTPBanner(
+        DaxAppTPBannerEnabled(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("App Tracking Protection is enabled") }
                 append(" and blocking tracking attempts across your apps.")
             },
-            state = DaxAppTPBannerState.Protected,
             onClick = {},
         )
     }
@@ -165,13 +212,12 @@ private fun DaxAppTPBannerEnabledPreview() {
 @Composable
 private fun DaxAppTPBannerTrackersBlockedPreview() {
     PreviewBox {
-        DaxAppTPBanner(
+        DaxAppTPBannerEnabled(
             text = buildAnnotatedString {
                 append("App Tracking Protection blocked 1,235 tracking attempts in ")
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Yelp and 14 other apps") }
                 append(" (past hour).")
             },
-            state = DaxAppTPBannerState.Protected,
             onClick = {},
         )
     }
@@ -181,12 +227,11 @@ private fun DaxAppTPBannerTrackersBlockedPreview() {
 @Composable
 private fun DaxAppTPBannerDisabledPreview() {
     PreviewBox {
-        DaxAppTPBanner(
+        DaxAppTPBannerDisabled(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("App Tracking Protection disabled.") }
                 append("\nTap to continue blocking tracking attempts across your apps.")
             },
-            state = DaxAppTPBannerState.Warning,
             onClick = {},
         )
     }
@@ -196,12 +241,11 @@ private fun DaxAppTPBannerDisabledPreview() {
 @Composable
 private fun DaxAppTPBannerRevokedPreview() {
     PreviewBox {
-        DaxAppTPBanner(
+        DaxAppTPBannerDisabled(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("A VPN app on your device disabled App Tracking Protection.") }
                 append("\nTap to re-enable.")
             },
-            state = DaxAppTPBannerState.Warning,
             onClick = {},
         )
     }
@@ -211,9 +255,8 @@ private fun DaxAppTPBannerRevokedPreview() {
 @Composable
 private fun DaxAppTPBannerFontScalePreview() {
     PreviewBox {
-        DaxAppTPBanner(
+        DaxAppTPBannerEnabled(
             text = "App Tracking Protection is enabled and blocking tracking attempts across your apps.",
-            state = DaxAppTPBannerState.Protected,
             onClick = {},
         )
     }
