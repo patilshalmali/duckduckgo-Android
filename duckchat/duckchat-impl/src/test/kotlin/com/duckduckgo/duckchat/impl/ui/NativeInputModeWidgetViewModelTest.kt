@@ -977,6 +977,21 @@ class NativeInputModeWidgetViewModelTest {
     }
 
     @Test
+    fun whenSetModelPickerEnabledThenPublishedToActiveTabState() = runTest {
+        val viewModel = createViewModel()
+        viewModel.configure(tabId = "tab-A", isDuckAiMode = true, isBottom = false)
+        advanceUntilIdle()
+
+        viewModel.setModelPickerEnabled(false)
+        advanceUntilIdle()
+        assertFalse(nativeInputStateProvider.stateForTab("tab-A").value.modelPickerEnabled)
+
+        viewModel.setModelPickerEnabled(true)
+        advanceUntilIdle()
+        assertTrue(nativeInputStateProvider.stateForTab("tab-A").value.modelPickerEnabled)
+    }
+
+    @Test
     fun whenPromptSubmittedThenModelChangeModeClearedOnActiveTab() = runTest {
         val viewModel = createViewModel()
         viewModel.configure(tabId = "tab-A", isDuckAiMode = true, isBottom = false)
