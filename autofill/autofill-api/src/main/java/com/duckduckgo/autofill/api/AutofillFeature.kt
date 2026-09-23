@@ -186,4 +186,7 @@ interface AutofillFeature {
 
     @Toggle.DefaultValue(Toggle.DefaultFeatureValue.FALSE)
     fun readFromHarmony(): Toggle
+
+    @Toggle.DefaultValue(defaultValue = DefaultFeatureValue.INTERNAL)
+    fun allowFidoCredentialExchangePasswordImport(): Toggle
 }
