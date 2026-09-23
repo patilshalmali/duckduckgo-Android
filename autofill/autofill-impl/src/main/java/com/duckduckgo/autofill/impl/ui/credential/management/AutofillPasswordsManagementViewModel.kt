@@ -468,6 +468,7 @@ class AutofillPasswordsManagementViewModel @Inject constructor(
             logcat(VERBOSE) { "Can import from Google Password Manager: $canImport" }
             _viewState.value = _viewState.value.copy(
                 canImportFromGooglePasswords = canImport,
+                canImportViaCredentialExchange = autofillFeature.allowFidoCredentialExchangePasswordImport().isEnabled(),
                 showAutofillEnabledToggle = autofillFeature.settingsScreen().isEnabled().not(),
             )
         }
@@ -825,6 +826,7 @@ class AutofillPasswordsManagementViewModel @Inject constructor(
         val reportBreakageState: ReportBreakageState = ReportBreakageState(),
         val canShowPromo: Boolean = false,
         val canImportFromGooglePasswords: Boolean = false,
+        val canImportViaCredentialExchange: Boolean = false,
         val prioritizeDomainMatchesOnSearch: Boolean = false,
     )
 
