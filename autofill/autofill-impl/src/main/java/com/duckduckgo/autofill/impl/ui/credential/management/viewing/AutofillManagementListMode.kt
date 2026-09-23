@@ -416,6 +416,7 @@ class AutofillManagementListMode : DuckDuckGoFragment(R.layout.fragment_autofill
 
     private fun startCredentialExchangeImport() {
         val activity = activity ?: return
+        importPasswordsPixelSender.onCredentialExchangeImportStarted()
         lifecycleScope.launch {
             authorizationGracePeriod.requestExtendedGracePeriod()
             val result = try {
@@ -425,6 +426,10 @@ class AutofillManagementListMode : DuckDuckGoFragment(R.layout.fragment_autofill
             }
             when (result) {
                 is CredentialTransferResult.Success -> {
+                    importPasswordsPixelSender.onCredentialExchangeImportSucceeded(
+                        savedCredentials = result.credentials.size,
+                        numberSkipped = result.originalCount - result.credentials.size,
+                    )
                     credentialImporter.import(result.credentials, result.originalCount, PasswordManagementOverflow)
 
                     lifecycle.withResumed {
@@ -432,9 +437,10 @@ class AutofillManagementListMode : DuckDuckGoFragment(R.layout.fragment_autofill
                             .show(parentFragmentManager, IMPORT_FROM_GPM_DIALOG_TAG)
                     }
                 }
-                is CredentialTransferResult.Cancelled -> Unit
+                is CredentialTransferResult.Cancelled -> importPasswordsPixelSender.onCredentialExchangeImportCancelled()
                 is CredentialTransferResult.Failure -> {
                     logcat(ERROR) { "Credential exchange import failed: ${result.reason}" }
+                    importPasswordsPixelSender.onCredentialExchangeImportFailed(result.reason)
                     showCredentialExchangeFailure(result.reason)
                 }
             }
