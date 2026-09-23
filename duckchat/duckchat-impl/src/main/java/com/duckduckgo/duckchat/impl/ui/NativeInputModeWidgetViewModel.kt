@@ -194,13 +194,6 @@ class NativeInputModeWidgetViewModel @Inject constructor(
     }
 
     /**
-     * Events asking the widget to open the model picker (e.g. for the FE recovery flow) for the related tabId.
-     */
-    val showModelPickerEvents: Flow<Unit> = duckChatInternal.showModelPickerEvents
-        .filter { it == activeTabId.value }
-        .map { }
-
-    /**
      * Edit-screen requests for this widget's tab. Both the omnibar and the contextual sheet widget can
      * be configured with the same tabId, so the surface has to match too or both would launch.
      */
@@ -212,6 +205,9 @@ class NativeInputModeWidgetViewModel @Inject constructor(
 
     fun setModelPickerEnabled(enabled: Boolean) {
         _modelPickerEnabled.value = enabled
+        activeTabId.value?.let { tabId ->
+            nativeInputStatePublisher.update(tabId) { it.copy(modelPickerEnabled = enabled) }
+        }
     }
 
     // currentChat can briefly hold the previous chat while a getChatById lookup is in flight.
@@ -356,12 +352,6 @@ class NativeInputModeWidgetViewModel @Inject constructor(
     val submitEnabled: Flow<Boolean> = activeTabId.filterNotNull()
         .flatMapLatest { tabId -> nativeInputStateProvider.stateForTab(tabId) }
         .map { it.submitEnabled }
-        .distinctUntilChanged()
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val modelChangeMode: Flow<Boolean> = activeTabId.filterNotNull()
-        .flatMapLatest { tabId -> nativeInputStateProvider.stateForTab(tabId) }
-        .map { it.modelChangeMode }
         .distinctUntilChanged()
 
     // interactionLock / duckAiFireButtonHighlighted live in the per-tab provider state (written by
