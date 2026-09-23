@@ -68,6 +68,11 @@ dependencies {
     implementation "com.squareup.logcat:logcat:_"
     implementation "androidx.autofill:autofill:_"
 
+    // PoC: OS-level credential transfer import. Not yet in the refreshVersions catalog, so pinned directly.
+    implementation "androidx.credentials:credentials:_"
+    implementation "androidx.credentials.providerevents:providerevents:1.0.0-beta01"
+    implementation "androidx.credentials.providerevents:providerevents-play-services:1.0.0-beta01"
+
     implementation KotlinX.coroutines.core
     implementation AndroidX.fragment.ktx
     implementation "androidx.webkit:webkit:_"
